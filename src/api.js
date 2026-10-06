@@ -63,8 +63,12 @@ api.interceptors.response.use(
   }
 );
 
-export const errorMessage = (err) =>
-  err?.response?.data?.error || err?.message || 'Something went wrong';
+// The LavaLust Api library answers errors as { error: "message", status: 4xx }.
+export const errorMessage = (err) => {
+  if (err?.response) return err.response.data?.error || `Request failed (${err.response.status}).`;
+  if (err?.request) return 'Can’t reach the server. Check your connection and try again.';
+  return err?.message || 'Something went wrong';
+};
 
 // ---- Auth ----
 export const register = (payload) => api.post('/api/register', payload);
